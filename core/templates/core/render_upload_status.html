@@ -1,0 +1,96 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+
+<body>
+<div class="alert alert-info" role="alert">
+    Uploaded {{ completed|length }} of {{ total }} contacts in {{ contact_list }}.
+</div>
+
+
+ {% if completed|length > 0 %}
+    <div class="row">
+        <div class="col-12">
+    <table class="table" style="width: 100%">
+    <thead>
+    <tr>
+        <th colspan="7" style="text-align: center; background-color: rgba(0, 200, 0, 0.1)">        The following contacts were uploaded.
+</th>
+    <tr>
+        <th>Name</th>
+        <th>Phone Number</th>
+        <th>Street address</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Zip code</th>
+    </tr>
+    </thead>
+    {% for customer in completed %}
+        <tr>
+            <td>
+                {{ customer.name }}
+            </td>
+            <td>
+                {{ customer.phone_number }}
+            </td>
+            <td>
+                {{ customer.street_address }}
+            </td>
+            <td>
+                {{ customer.city }}
+            </td>
+            <td>
+                {{ customer.state }}
+            </td>
+            <td>
+                {{ customer.zip_code }}
+            </td>
+
+        </tr>
+    </table>
+    </div>
+
+    {% endfor %}
+    </div>
+{% endif %}
+
+
+ {% if failed|length > 0 %}
+    <div class="row">
+    <div class="col-12">
+    <table class="table" width="100%">
+    <thead>
+    <tr>
+        <th colspan="7" style="text-align: center; background-color: rgba(200, 0, 0, 0.1)">        The following rows failed.
+</th>
+    </tr>
+    <tr>
+        <th>Name</th>
+        <th>Phone Number</th>
+        <th>Street address</th>
+        <th>City</th>
+        <th>State</th>
+        <th>Zip code</th>
+        <th>Error</th>
+    </tr>
+
+    </thead>
+        {% for error in failed %}
+            <tr>
+            {% for col in error.0 %}
+                <td>
+                {{ col.value }}
+                </td>
+            {% endfor %}
+            <td>{{ error.1 }}
+            </td>
+            </tr>
+        {% endfor %}
+    </table>
+    </div>
+    </div>
+ {% endif %}
+
+</body>
+</html>

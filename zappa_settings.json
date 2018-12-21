@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "django_settings": "twilio_backend.settings",
+        "profile_name": "twilio",
+        "project_name": "twilio-backend",
+        "runtime": "python3.6",
+        "s3_bucket": "zappa-gcxeo3hpf",
+        "aws_region": "us-east-1"
+    }
+}
