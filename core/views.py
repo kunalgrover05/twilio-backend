@@ -155,19 +155,33 @@ class MessageTemplateView(CreateAPIView, UpdateAPIView,
 
 
 class CustomerSMSSerializer(serializers.ModelSerializer):
-    all_sms = SMSSerializer(many=True)
+    last_sms = serializers.SerializerMethodField(read_only=True)
+
+    def get_last_sms(self, obj):
+        if obj.all_sms.first() is not None:
+            return SMSSerializer().to_representation(obj.all_sms.order_by('-created').first())
+        return None
 
     class Meta:
         model = models.Customer
         fields = '__all__'
 
 
-class CustomerSMSView(ListAPIView):
+class CustomerSMSFullSerializer(serializers.ModelSerializer):
+    all_sms = SMSSerializer(many=True)
+
+    class Meta:
+        model = models.Customer
+        fields = '__all__'
+
+class CustomerSMSView(ListAPIView, RetrieveAPIView):
     serializer_class = CustomerSMSSerializer
     queryset = models.Customer.objects.prefetch_related('all_sms').all()
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+
+class CustomerSMSFullView(RetrieveAPIView):
+    serializer_class = CustomerSMSFullSerializer
+    queryset = models.Customer.objects.prefetch_related('all_sms').all()
 
 
 class FileUploadForm(forms.Form):

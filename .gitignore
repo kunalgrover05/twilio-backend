@@ -1,0 +1,4 @@
+env3/
+twilio-backend-dev*
+db.sqlite3
+.idea

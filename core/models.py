@@ -56,6 +56,9 @@ class SMS(models.Model):
 
         return sms
 
+    class Meta:
+        ordering = ['-created']
+
 class SMSStatus(models.Model):
     sid = models.CharField(max_length=34, primary_key=True)
     status = models.CharField(choices=[
