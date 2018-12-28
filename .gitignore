@@ -1,4 +1,4 @@
-env3/
+env/
 twilio-backend-dev*
 db.sqlite3
 .idea

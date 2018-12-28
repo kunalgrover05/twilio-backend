@@ -51,6 +51,15 @@ class SendSMSSerializer(serializers.Serializer):
     message = serializers.CharField()
     customer = serializers.PrimaryKeyRelatedField(queryset=models.Customer.objects.all())
     sent_by = serializers.PrimaryKeyRelatedField(read_only=True)
+    status = serializers.SerializerMethodField()
+    created = serializers.DateTimeField(read_only=True)
+    type = serializers.CharField(read_only=True)
+
+    def get_status(self, obj):
+        try:
+            return models.SMSStatus.objects.get(sid=obj.sid).get_status_display()
+        except ObjectDoesNotExist:
+            return None
 
     def create(self, validated_data):
         client = Client(
