@@ -24,6 +24,7 @@ class SMS(models.Model):
     sid = models.CharField(max_length=34, unique=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    sender_number = PhoneNumberField()
     type = models.CharField(choices=[
         ('incoming', 'Incoming'),
         ('outgoing', 'Outgoing')
@@ -33,8 +34,9 @@ class SMS(models.Model):
     message = models.TextField()
 
     @staticmethod
-    def create_og(sid, status, sent_by, customer, message):
-        sms = SMS(sid=sid, sent_by=sent_by, customer=customer, message=message, type='outgoing')
+    def create_og(sid, sender_number, status, sent_by, customer, message):
+        sms = SMS(sid=sid, sent_by=sent_by, customer=customer, message=message,
+                  type='outgoing', sender_number=sender_number)
         sms.full_clean()
         sms.save()
 
@@ -45,8 +47,8 @@ class SMS(models.Model):
         return sms
 
     @staticmethod
-    def create_in(sid, status, customer, message):
-        sms = SMS(sid=sid, customer=customer, message=message, type='incoming')
+    def create_in(sid, sender_number, status, customer, message):
+        sms = SMS(sid=sid, customer=customer, message=message, type='incoming', sender_number=sender_number)
         sms.full_clean()
         sms.save()
 

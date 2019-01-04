@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import random
+
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
@@ -13,6 +15,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
+from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import permissions, serializers, filters
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import api_view
@@ -42,15 +45,17 @@ def incoming(request):
     body = str(request.POST['Body'])
     sid = request.POST['MessageSid']
     status = request.POST['SmsStatus']
+    sender_number = request.POST['To']
     customer = models.Customer.objects.get(phone_number=request.POST['From'])
     logging.error("SMSID %s %s" % (body, sid))
-    models.SMS.create_in(sid, status, customer, body)
+    models.SMS.create_in(sid, sender_number, status, customer, body)
     return HttpResponse(200)
 
 class SendSMSSerializer(serializers.Serializer):
     message = serializers.CharField()
     customer = serializers.PrimaryKeyRelatedField(queryset=models.Customer.objects.all())
     sent_by = serializers.PrimaryKeyRelatedField(read_only=True)
+    preferred_number = PhoneNumberField(allow_null=True, required=False, allow_blank=True)
     status = serializers.SerializerMethodField()
     created = serializers.DateTimeField(read_only=True)
     type = serializers.CharField(read_only=True)
@@ -65,12 +70,24 @@ class SendSMSSerializer(serializers.Serializer):
         client = Client(
             settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
 
+        sender_number = None
+        numbers = client.incoming_phone_numbers.list()
+        if validated_data.get('preferred_number', None) is not None:
+            for number in numbers:
+                if str(validated_data['preferred_number']) == number.phone_number:
+                    sender_number = number.phone_number
+
+        if not sender_number:
+            sender_number = random.choice(numbers).phone_number
+
         response = client.messages.create(
             body=validated_data['message'],
-            to=str(validated_data['customer'].phone_number), from_='+13852471760',
+            to=str(validated_data['customer'].phone_number), from_=sender_number,
             status_callback='https://dxrgulff1k.execute-api.us-east-1.amazonaws.com/dev/callback/')
 
-        return models.SMS.create_og(response.sid, response.status,
+        return models.SMS.create_og(response.sid,
+                             status=response.status,
+                             sender_number=sender_number,
                              sent_by=validated_data['sent_by'],
                              customer=validated_data['customer'],
                              message=validated_data['message'])
