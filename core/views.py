@@ -246,7 +246,7 @@ def upload_contacts_list(request):
 
             for rx in range(1, sh.nrows):
                 customer = models.Customer(name=sh.row(rx)[0].value,
-                                           phone_number=sh.row(rx)[1].value,
+                                           phone_number='+1' + str(int(sh.row(rx)[1].value)),
                                            street_address=sh.row(rx)[2].value,
                                            city=sh.row(rx)[3].value,
                                            state=sh.row(rx)[4].value,
