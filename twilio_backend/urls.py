@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^tag/((?P<pk>[0-9]+)/)?', core.views.TagView.as_view()),
     url(r'^send_message/', core.views.SendMessageView.as_view()),
     url(r'^callback/', core.views.callback),
-    url(r'^incoming/', core.views.incoming),
+    url(r'^incoming/', core.views.incoming_message),
     url(r'^api-token-auth/', views.obtain_auth_token),
     url(r'^uploadContacts/', core.views.upload_contacts_list),
     url(r'^contactList/', core.views.contact_lists)
