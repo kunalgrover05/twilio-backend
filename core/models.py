@@ -7,6 +7,7 @@ from django.db import models
 # Create your models here.
 from phonenumber_field.modelfields import PhoneNumberField
 
+
 class Customer(models.Model):
     phone_number = PhoneNumberField(unique=True)
     name = models.CharField(max_length=191)
@@ -16,9 +17,11 @@ class Customer(models.Model):
     zip_code = models.PositiveIntegerField(null=True, blank=True)
     contact_list = models.CharField(max_length=191, null=True, blank=True)
     tag = models.ForeignKey('Tag', null=True, blank=True, on_delete=models.CASCADE)
+    latest_sms = models.ForeignKey('SMS', null=True, on_delete=models.CASCADE, related_name='customer_last')
 
     def __str__(self):
         return self.name
+
 
 class SMS(models.Model):
     sid = models.CharField(max_length=34, unique=True)
@@ -44,6 +47,9 @@ class SMS(models.Model):
         smsStatus.status = status
         smsStatus.save()
 
+        customer.latest_sms = sms
+        customer.save()
+
         return sms
 
     @staticmethod
@@ -56,10 +62,14 @@ class SMS(models.Model):
         smsStatus.status = status
         smsStatus.save()
 
+        customer.latest_sms = sms
+        customer.save()
+
         return sms
 
     class Meta:
         ordering = ['-created']
+
 
 class SMSStatus(models.Model):
     sid = models.CharField(max_length=34, primary_key=True)

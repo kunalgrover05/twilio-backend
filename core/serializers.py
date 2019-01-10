@@ -1,7 +1,9 @@
+import random
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 
-from phonenumber_field.formfields import PhoneNumberField
+from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
 from twilio.rest import Client
 
@@ -72,12 +74,7 @@ class SMSSerializer(serializers.ModelSerializer):
 
 
 class CustomerSMSSerializer(serializers.ModelSerializer):
-    last_sms = serializers.SerializerMethodField(read_only=True)
-
-    def get_last_sms(self, obj):
-        if obj.all_sms.first() is not None:
-            return SMSSerializer().to_representation(obj.all_sms.order_by('-created').first())
-        return None
+    latest_sms = SMSSerializer(read_only=True)
 
     class Meta:
         model = models.Customer

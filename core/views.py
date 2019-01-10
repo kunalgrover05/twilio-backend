@@ -7,9 +7,12 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from django.views.decorators.csrf import csrf_exempt
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, BooleanFilter
 from rest_framework import permissions, serializers, filters
 from rest_framework.decorators import api_view
+from rest_framework.filters import OrderingFilter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView, ListAPIView
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 
 from core import models
@@ -110,9 +113,23 @@ class CustomerSMSFullSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class CustomerFilter(FilterSet):
+    no_message = BooleanFilter(field_name='latest_sms', lookup_expr='isnull')
+
+    class Meta:
+        model = models.Customer
+        fields = ('no_message', 'tag', 'latest_sms__type')
+
 class CustomerSMSView(ListAPIView, RetrieveAPIView):
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, OrderingFilter)
+    filterset_class = CustomerFilter
+    search_fields = ('name', 'city', 'phone_number', 'street_address', 'state', 'zip_code')
     serializer_class = CustomerSMSSerializer
-    queryset = models.Customer.objects.prefetch_related('all_sms').all()
+    queryset = models.Customer.objects.select_related('latest_sms').all()
+    pagination_class = LimitOffsetPagination
+    ordering_fields = ('latest_sms__created', )
+    ordering = ('latest_sms__created', )
+
 
 
 class CustomerSMSFullView(RetrieveAPIView):
