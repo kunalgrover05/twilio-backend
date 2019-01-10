@@ -12,7 +12,7 @@ from rest_framework import permissions, serializers, filters
 from rest_framework.decorators import api_view
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView, ListAPIView
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.response import Response
 
 from core import models
@@ -120,13 +120,30 @@ class CustomerFilter(FilterSet):
         model = models.Customer
         fields = ('no_message', 'tag', 'latest_sms__type')
 
+
+class CustomerPagination(PageNumberPagination):
+    page_size = 100
+
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+               'next': self.get_next_link(),
+               'previous': self.get_previous_link()
+            },
+            'current': self.page.number,
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,
+            'results': data
+        })
+
+
 class CustomerSMSView(ListAPIView, RetrieveAPIView):
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, OrderingFilter)
     filterset_class = CustomerFilter
     search_fields = ('name', 'city', 'phone_number', 'street_address', 'state', 'zip_code')
     serializer_class = CustomerSMSSerializer
     queryset = models.Customer.objects.select_related('latest_sms').all()
-    pagination_class = LimitOffsetPagination
+    pagination_class = CustomerPagination
     ordering_fields = ('latest_sms__created', )
     ordering = ('latest_sms__created', )
 

@@ -25,7 +25,6 @@ class Migration(migrations.Migration):
             name='latest_sms',
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='customer_last', to='core.SMS'),
         ),
-
         migrations.RunPython(
             add_latest_sms,
             lambda x,y: None
