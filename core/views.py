@@ -22,6 +22,22 @@ from core.serializers import CustomerSMSSerializer, SMSSerializer, MessageTempla
     CustomerSerializer, SendSMSSerializer
 
 
+class CustomerPagination(PageNumberPagination):
+    page_size = 100
+
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+               'next': self.get_next_link(),
+               'previous': self.get_previous_link()
+            },
+            'current': self.page.number,
+            'count': self.page.paginator.count,
+            'total_pages': self.page.paginator.num_pages,
+            'results': data
+        })
+
+
 @csrf_exempt
 def callback(request):
     sid = str(request.POST['MessageSid'])
@@ -56,14 +72,14 @@ class SendMessageView(CreateAPIView):
 class CustomerView(CreateAPIView, UpdateAPIView,
                    RetrieveAPIView, ListAPIView):
     serializer_class = CustomerSerializer
-    queryset = models.Customer.objects.all()
+    queryset = models.Customer.objects.all().order_by('name')
+    pagination_class = CustomerPagination
 
     def get(self, request, *args, **kwargs):
         if not self.request.query_params.get('pk'):
             return self.list(request, *args, **kwargs)
         else:
             return self.retrieve(request, *args, **kwargs)
-
 
 
 class SMSView(CreateAPIView, UpdateAPIView,
@@ -119,22 +135,6 @@ class CustomerFilter(FilterSet):
     class Meta:
         model = models.Customer
         fields = ('no_message', 'tag', 'latest_sms__type')
-
-
-class CustomerPagination(PageNumberPagination):
-    page_size = 100
-
-    def get_paginated_response(self, data):
-        return Response({
-            'links': {
-               'next': self.get_next_link(),
-               'previous': self.get_previous_link()
-            },
-            'current': self.page.number,
-            'count': self.page.paginator.count,
-            'total_pages': self.page.paginator.num_pages,
-            'results': data
-        })
 
 
 class CustomerSMSView(ListAPIView, RetrieveAPIView):
