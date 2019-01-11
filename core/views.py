@@ -72,8 +72,11 @@ class SendMessageView(CreateAPIView):
 class CustomerView(CreateAPIView, UpdateAPIView,
                    RetrieveAPIView, ListAPIView):
     serializer_class = CustomerSerializer
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend)
     queryset = models.Customer.objects.all().order_by('name')
     pagination_class = CustomerPagination
+    search_fields = ('name', 'city', 'phone_number', 'street_address', 'state', 'zip_code')
+    filter_fields = ('contact_list', )
 
     def get(self, request, *args, **kwargs):
         if not self.request.query_params.get('pk'):
