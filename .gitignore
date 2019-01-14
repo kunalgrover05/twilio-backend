@@ -2,3 +2,7 @@ env/
 twilio-backend-dev*
 db.sqlite3
 .idea
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

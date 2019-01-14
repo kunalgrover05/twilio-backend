@@ -23,8 +23,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'qw#&!corz7-p#92yfi)rf-zcer5#xy96_bw)w^57q8g+ji(vov'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if not os.environ.get('LAMBDA_TASK_ROOT'):
-    DEBUG = True
+# if not os.environ.get('LAMBDA_TASK_ROOT'):
+DEBUG = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'core',
-    'zappa_django_utils',
     'rest_framework.authtoken',
     'django_filters'
 ]
@@ -86,23 +85,23 @@ WSGI_APPLICATION = 'twilio_backend.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
-if os.environ.get('LAMBDA_TASK_ROOT'):
-    DATABASES = {
-            'default': {
-                'ENGINE': 'django.db.backends.mysql',
-                'HOST': 'twilio-backend.cg0a62vmn9fd.us-east-1.rds.amazonaws.com',
-                'USER': 'master',
-                'PASSWORD': 'GCSgNUV6',
-                'NAME': 'twilio'
-            }
-        }
-else:
-    DATABASES = {
+# if os.environ.get('LAMBDA_TASK_ROOT'):
+DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': 'twilio.db'
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': 'twilio-backend.cg0a62vmn9fd.us-east-1.rds.amazonaws.com',
+            'USER': 'master',
+            'PASSWORD': 'GCSgNUV6',
+            'NAME': 'twilio'
         }
-    }
+}
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': 'twilio.db'
+#         }
+#     }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -153,3 +152,10 @@ if os.environ.get('LAMBDA_TASK_ROOT'):
 else:
     STATIC_URL = '/static/'
 STATIC_ROOT = 'static/'
+
+
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'apikey'
+EMAIL_HOST_PASSWORD = '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'
+EMAIL_USE_TLS = True

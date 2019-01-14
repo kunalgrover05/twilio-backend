@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^customer/((?P<pk>[0-9]+)/)?', core.views.CustomerView.as_view()),
     url(r'^customerSms/(?P<pk>[0-9]+)/', core.views.CustomerSMSFullView.as_view()),
     url(r'^customerSms/$', core.views.CustomerSMSView.as_view()),
+    url(r'^customerSmsExport/$', core.views.CustomerSMSFullExportView.as_view()),
     url(r'^sms/((?P<pk>[\w]+)/)?', core.views.SMSView.as_view()),
     url(r'^messageTemplate/((?P<pk>[\w]+)/)?', core.views.MessageTemplateView.as_view()),
     url(r'^tag/((?P<pk>[0-9]+)/)?', core.views.TagView.as_view()),

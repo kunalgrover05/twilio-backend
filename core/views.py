@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import datetime
+
 from django.contrib.admin.views.decorators import staff_member_required
+from django.core.mail import EmailMessage
 from django.forms import forms, fields
 from django.http import HttpResponse
 from django.shortcuts import render
@@ -14,6 +17,7 @@ from rest_framework.filters import OrderingFilter
 from rest_framework.generics import CreateAPIView, UpdateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
 from rest_framework.response import Response
+from rest_pandas import PandasView, PandasMixin, PandasSimpleView, PandasBaseRenderer, PandasSerializer
 
 from core import models
 import logging
@@ -151,10 +155,31 @@ class CustomerSMSView(ListAPIView, RetrieveAPIView):
     ordering = ('latest_sms__created', )
 
 
-
 class CustomerSMSFullView(RetrieveAPIView):
     serializer_class = CustomerSMSFullSerializer
     queryset = models.Customer.objects.prefetch_related('all_sms').all()
+
+
+class CustomerSMSFullExportView(PandasView):
+    serializer_class = CustomerSMSFullSerializer
+    queryset = models.Customer.objects.prefetch_related('all_sms').all().order_by('name')
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, OrderingFilter)
+    filterset_class = CustomerFilter
+
+    # Adds a single step of merging all messages as one
+    def transform_dataframe(self, dataframe):
+        dataframe['all_sms'] = '\n'.join([CustomerSMSFullExportView.get_merged_sms_field(x) for x in dataframe['all_sms']])
+        return dataframe
+
+    @staticmethod
+    def get_merged_sms_field(smsList):
+        out = ""
+        for sms in smsList:
+            out += sms['message']
+            date_str = datetime.datetime.strptime(sms['created'],  "%Y-%m-%dT%H:%M:%S.%fZ").strftime('%m/%d/%Y, %H:%M')
+            out += '\n' + sms['type'] + ' on ' + date_str + ' ' + sms['status']
+            out += '\n\n'
+        return out
 
 
 class FileUploadForm(forms.Form):
