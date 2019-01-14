@@ -91,3 +91,20 @@ class MessageTemplateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.MessageTemplate
         fields = '__all__'
+
+
+class CustomerSMSFullSerializer(serializers.ModelSerializer):
+    all_sms = SMSSerializer(many=True)
+
+    class Meta:
+        model = models.Customer
+        fields = '__all__'
+
+
+class CustomerSMSExportSerializer(serializers.ModelSerializer):
+    all_sms = SMSSerializer(many=True)
+    tag = serializers.StringRelatedField(source='tag.name')
+
+    class Meta:
+        model = models.Customer
+        exclude = ('latest_sms', )

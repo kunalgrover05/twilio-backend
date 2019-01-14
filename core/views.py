@@ -23,7 +23,7 @@ from core import models
 import logging
 
 from core.serializers import CustomerSMSSerializer, SMSSerializer, MessageTemplateSerializer, TagSerializer, \
-    CustomerSerializer, SendSMSSerializer
+    CustomerSerializer, SendSMSSerializer, CustomerSMSFullSerializer, CustomerSMSExportSerializer
 
 
 class CustomerPagination(PageNumberPagination):
@@ -131,14 +131,6 @@ class MessageTemplateView(CreateAPIView, UpdateAPIView,
             return self.retrieve(request, *args, **kwargs)
 
 
-class CustomerSMSFullSerializer(serializers.ModelSerializer):
-    all_sms = SMSSerializer(many=True)
-
-    class Meta:
-        model = models.Customer
-        fields = '__all__'
-
-
 class CustomerFilter(FilterSet):
     no_message = BooleanFilter(field_name='latest_sms', lookup_expr='isnull')
 
@@ -167,8 +159,9 @@ class CustomerSMSFullView(RetrieveAPIView):
 def export_report(request):
     request.GET.get('')
 
+
 class CustomerSMSFullExportView(PandasView):
-    serializer_class = CustomerSMSFullSerializer
+    serializer_class = CustomerSMSExportSerializer
     queryset = models.Customer.objects.prefetch_related('all_sms').all().order_by('name')
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, )
     filterset_class = CustomerFilter
@@ -197,6 +190,7 @@ class CustomerSMSFullExportView(PandasView):
             return super(CustomerSMSFullExportView, self).get(request, *args, **kwargs)
         except Exception as e:
             print(e)
+
 
 class FileUploadForm(forms.Form):
     file = forms.FileField()
