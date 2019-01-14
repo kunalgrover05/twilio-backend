@@ -24,7 +24,7 @@ SECRET_KEY = 'qw#&!corz7-p#92yfi)rf-zcer5#xy96_bw)w^57q8g+ji(vov'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # if not os.environ.get('LAMBDA_TASK_ROOT'):
-DEBUG = True
+DEBUG = False
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -53,7 +53,6 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

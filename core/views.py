@@ -75,6 +75,7 @@ class SendMessageView(CreateAPIView):
 
 class CustomerView(CreateAPIView, UpdateAPIView,
                    RetrieveAPIView, ListAPIView):
+    permission_classes = (permissions.IsAdminUser,)
     serializer_class = CustomerSerializer
     filter_backends = (filters.SearchFilter, DjangoFilterBackend)
     queryset = models.Customer.objects.all().order_by('name')
@@ -92,6 +93,7 @@ class CustomerView(CreateAPIView, UpdateAPIView,
 class SMSView(CreateAPIView, UpdateAPIView,
               RetrieveAPIView, ListAPIView):
     serializer_class = SMSSerializer
+    permission_classes = (permissions.IsAdminUser,)
     queryset = models.SMS.objects.all()
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('-created',)
@@ -108,6 +110,7 @@ class TagView(CreateAPIView, UpdateAPIView,
                 RetrieveAPIView, ListAPIView):
     serializer_class = TagSerializer
     queryset = models.Tag.objects.all()
+    permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request, *args, **kwargs):
         if not self.request.query_params.get('pk'):
@@ -145,6 +148,7 @@ class CustomerFilter(FilterSet):
 
 
 class CustomerSMSView(ListAPIView, RetrieveAPIView):
+    permission_classes = (permissions.IsAdminUser,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, OrderingFilter)
     filterset_class = CustomerFilter
     search_fields = ('name', 'city', 'phone_number', 'street_address', 'state', 'zip_code')
@@ -160,16 +164,22 @@ class CustomerSMSFullView(RetrieveAPIView):
     queryset = models.Customer.objects.prefetch_related('all_sms').all()
 
 
+def export_report(request):
+    request.GET.get('')
+
 class CustomerSMSFullExportView(PandasView):
     serializer_class = CustomerSMSFullSerializer
     queryset = models.Customer.objects.prefetch_related('all_sms').all().order_by('name')
-    filter_backends = (filters.SearchFilter, DjangoFilterBackend, OrderingFilter)
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, )
     filterset_class = CustomerFilter
+    permission_classes = (permissions.IsAdminUser,)
+
 
     # Adds a single step of merging all messages as one
     def transform_dataframe(self, dataframe):
         dataframe['all_sms'] = '\n'.join([CustomerSMSFullExportView.get_merged_sms_field(x) for x in dataframe['all_sms']])
         return dataframe
+
 
     @staticmethod
     def get_merged_sms_field(smsList):
@@ -182,11 +192,18 @@ class CustomerSMSFullExportView(PandasView):
         return out
 
 
+    def get(self, request, *args, **kwargs):
+        try:
+            return super(CustomerSMSFullExportView, self).get(request, *args, **kwargs)
+        except Exception as e:
+            print(e)
+
 class FileUploadForm(forms.Form):
     file = forms.FileField()
     contact_list = fields.CharField(required=False)
 
 
+@staff_member_required
 @api_view(['GET'])
 def contact_lists(request):
     return Response(set(models.Customer.objects.filter(contact_list__isnull=False)
