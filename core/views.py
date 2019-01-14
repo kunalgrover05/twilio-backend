@@ -197,8 +197,8 @@ class FileUploadForm(forms.Form):
     contact_list = fields.CharField(required=False)
 
 
-@staff_member_required
 @api_view(['GET'])
+@staff_member_required
 def contact_lists(request):
     return Response(set(models.Customer.objects.filter(contact_list__isnull=False)
                         .values_list('contact_list', flat=True).all()))
