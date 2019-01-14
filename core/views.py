@@ -177,7 +177,7 @@ class CustomerSMSFullExportView(PandasView):
 
     # Adds a single step of merging all messages as one
     def transform_dataframe(self, dataframe):
-        dataframe['all_sms'] = '\n'.join([CustomerSMSFullExportView.get_merged_sms_field(x) for x in dataframe['all_sms']])
+        dataframe['all_sms'] = [CustomerSMSFullExportView.get_merged_sms_field(x) for x in dataframe['all_sms']]
         return dataframe
 
 

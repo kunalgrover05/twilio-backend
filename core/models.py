@@ -92,6 +92,7 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+
 class MessageTemplate(models.Model):
     text = models.TextField()
 
