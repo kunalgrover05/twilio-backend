@@ -7,7 +7,13 @@ from django.contrib import admin
 from core.models import Customer, SMS, Tag, MessageTemplate
 
 
+from django.contrib import admin
+
+
 class CustomerAdmin(admin.ModelAdmin):
+    search_fields = ('name', )
+    list_filter = ('contact_list', )
+
     class Meta:
         model = Customer
 
@@ -32,3 +38,4 @@ admin.site.register(Customer, CustomerAdmin)
 admin.site.register(SMS, SMSAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(MessageTemplate, MessageTemplateAdmin)
+
