@@ -6,7 +6,7 @@ import datetime
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.mail import EmailMessage
 from django.forms import forms, fields
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 from django.views.decorators.csrf import csrf_exempt
@@ -254,3 +254,38 @@ def upload_contacts_list(request):
     else:
         form = FileUploadForm()
     return render(request, 'core/empty-form.html', {'form': form})
+
+
+@api_view(['GET'])
+def get_smses_sent_with_replies(request):
+    start = request.GET['startDate']
+    end = request.GET['endDate']
+
+    # for sms in models.SMS.objects.all():
+        # View datewise => Customer contacted vs Customer replied
+
+    dates_sms = {}
+    dates_received_sms = {}
+
+    for customer in models.Customer.objects.prefetch_related('all_sms')\
+        .filter(all_sms__created__range=[start, end]).distinct().all():
+        val = customer.all_sms.filter(type='outgoing').earliest('created')
+        if start <= val.created <= end:
+            date = val.created.strftime('%Y-%m-%d')
+
+            dates_sms[date] = dates_sms.get(date, 0) + 1
+
+            if customer.all_sms.filter(type='incoming').exists():
+                # Good one inbound SMS
+                dates_received_sms[date] = dates_received_sms.get(date, 0) + 1
+
+    resp = []
+    # Merge into single response
+    for date, total in dates_sms.items():
+        resp.append({
+            'date': date,
+            'total': total,
+            'responded': dates_received_sms.get(date, 0)
+        })
+
+    return Response(resp)
