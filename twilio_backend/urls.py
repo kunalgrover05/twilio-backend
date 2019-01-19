@@ -34,5 +34,6 @@ urlpatterns = [
     url(r'^api-token-auth/', views.obtain_auth_token),
     url(r'^uploadContacts/', core.views.upload_contacts_list),
     url(r'^contactList/', core.views.contact_lists),
-    url(r'^smsAnalytics/', core.views.get_smses_sent_with_replies)
+    url(r'^smsAnalytics/', core.views.get_smses_sent_with_replies),
+    url(r'^userSmsAnalytics/', core.views.user_sms_data)
 ]

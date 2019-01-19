@@ -18,6 +18,8 @@ class Customer(models.Model):
     contact_list = models.CharField(max_length=191, null=True, blank=True)
     tag = models.ForeignKey('Tag', null=True, blank=True, on_delete=models.CASCADE)
     latest_sms = models.ForeignKey('SMS', null=True, on_delete=models.CASCADE, related_name='customer_last')
+    first_sms = models.ForeignKey('SMS', null=True, on_delete=models.CASCADE, related_name='customer_first')
+    responded = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -47,6 +49,9 @@ class SMS(models.Model):
         smsStatus.status = status
         smsStatus.save()
 
+        if not customer.first_sms:
+            customer.first_sms = sms
+
         customer.latest_sms = sms
         customer.save()
 
@@ -62,7 +67,11 @@ class SMS(models.Model):
         smsStatus.status = status
         smsStatus.save()
 
+        if not customer.first_sms:
+            customer.first_sms = sms
+
         customer.latest_sms = sms
+        customer.responded = True
         customer.save()
 
         return sms

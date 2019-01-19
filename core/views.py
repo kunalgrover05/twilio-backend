@@ -5,6 +5,7 @@ import datetime
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.mail import EmailMessage
+from django.db.models import Count
 from django.forms import forms, fields
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -257,27 +258,20 @@ def upload_contacts_list(request):
 
 
 @api_view(['GET'])
+@staff_member_required
 def get_smses_sent_with_replies(request):
     start = request.GET['startDate']
     end = request.GET['endDate']
 
-    # for sms in models.SMS.objects.all():
-        # View datewise => Customer contacted vs Customer replied
-
     dates_sms = {}
     dates_received_sms = {}
 
-    for customer in models.Customer.objects.prefetch_related('all_sms')\
-        .filter(all_sms__created__range=[start, end]).distinct().all():
-        val = customer.all_sms.filter(type='outgoing').earliest('created')
-        if start <= val.created <= end:
-            date = val.created.strftime('%Y-%m-%d')
-
-            dates_sms[date] = dates_sms.get(date, 0) + 1
-
-            if customer.all_sms.filter(type='incoming').exists():
-                # Good one inbound SMS
-                dates_received_sms[date] = dates_received_sms.get(date, 0) + 1
+    for customer in models.Customer.objects.select_related('first_sms')\
+        .filter(first_sms__created__range=[start, end]).distinct().all():
+        date = customer.first_sms.created.strftime('%Y-%m-%d')
+        dates_sms[date] = dates_sms.get(date, 0) + 1
+        if customer.responded:
+            dates_received_sms[date] = dates_received_sms.get(date, 0) + 1
 
     resp = []
     # Merge into single response
@@ -289,3 +283,19 @@ def get_smses_sent_with_replies(request):
         })
 
     return Response(resp)
+
+
+@api_view(['GET'])
+@staff_member_required
+def user_sms_data(request):
+    start = request.GET['startDate']
+    end = request.GET['endDate']
+
+    # Returns
+    # No of SMSes sent by a user on a date
+    res = models.SMS.objects.filter(created__range=[start, end], type='outgoing')\
+        .values('sent_by_id', 'created__date')\
+        .annotate(total=Count('sent_by_id'))\
+        .order_by('sent_by_id', 'created__date').all()
+
+    return Response(res)
