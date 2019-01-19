@@ -17,8 +17,8 @@ class Customer(models.Model):
     zip_code = models.PositiveIntegerField(null=True, blank=True)
     contact_list = models.CharField(max_length=191, null=True, blank=True)
     tag = models.ForeignKey('Tag', null=True, blank=True, on_delete=models.CASCADE)
-    latest_sms = models.ForeignKey('SMS', null=True, on_delete=models.CASCADE, related_name='customer_last')
-    first_sms = models.ForeignKey('SMS', null=True, on_delete=models.CASCADE, related_name='customer_first')
+    latest_sms = models.ForeignKey('SMS', null=True, blank=True, on_delete=models.CASCADE, related_name='customer_last')
+    first_sms = models.ForeignKey('SMS', null=True, blank=True, on_delete=models.CASCADE, related_name='customer_first')
     responded = models.BooleanField(default=False)
 
     def __str__(self):
