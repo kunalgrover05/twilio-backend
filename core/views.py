@@ -294,8 +294,8 @@ def user_sms_data(request):
     # Returns
     # No of SMSes sent by a user on a date
     res = models.SMS.objects.filter(created__range=[start, end], type='outgoing')\
-        .values('sent_by_id', 'created__date')\
-        .annotate(total=Count('sent_by_id'))\
-        .order_by('sent_by_id', 'created__date').all()
+        .values('sent_by__username', 'created__date')\
+        .annotate(total=Count('sent_by__username'))\
+        .order_by('sent_by__username', 'created__date').all()
 
     return Response(res)
