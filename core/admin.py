@@ -52,7 +52,7 @@ class CustomerSentSMSFilter(admin.SimpleListFilter):
 
 
 class UpdateContactListForm(forms.Form):
-    contact_list = CharField(required=True)
+    contact_list = CharField(empty_value=False)
     _selected_action = CharField(widget=MultipleHiddenInput)
 
 
@@ -69,7 +69,7 @@ class CustomerAdmin(admin.ModelAdmin):
             if form.is_valid():
                 queryset.update(contact_list=form.cleaned_data['contact_list'])
                 self.message_user(request,
-                                  "Changed contact list for {} customers".format(queryset.count()))
+                                  "Changed contact list for all customers")
                 return HttpResponseRedirect(request.get_full_path())
         if not form:
             form = UpdateContactListForm(initial={'_selected_action': request.POST.getlist(ACTION_CHECKBOX_NAME)})

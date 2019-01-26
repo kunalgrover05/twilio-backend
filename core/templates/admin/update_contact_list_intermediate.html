@@ -6,13 +6,14 @@
 <p>
 Are you sure you want to change contact list for the following users? (Use with care)
 </p>
+<ul>
   {% for customer in customers %}
-    <p>
-      {{ customer }}
-    </p>
-  {% endfor %}
 
-    {{ form }}
+        <li>{{ customer }}</li>
+  {% endfor %}
+</ul>
+
+  {{ form }}
   <input type="hidden" name="action" value="update_contact_list" />
   <input type="submit" name="apply" value="Update Contact list"/>
 </form>
