@@ -1,0 +1,19 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<form action="" method="post">
+  {% csrf_token %}
+<p>
+Are you sure you want to change contact list for the following users? (Use with care)
+</p>
+  {% for customer in customers %}
+    <p>
+      {{ customer }}
+    </p>
+  {% endfor %}
+
+    {{ form }}
+  <input type="hidden" name="action" value="update_contact_list" />
+  <input type="submit" name="apply" value="Update Contact list"/>
+</form>
+{% endblock %}

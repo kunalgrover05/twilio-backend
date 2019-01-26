@@ -1,10 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django import template
 from django.contrib import admin
 
 # Register your models here.
+from django.contrib.admin import ACTION_CHECKBOX_NAME
 from django.db.models import Q
+from django.forms import forms, CharField, MultipleHiddenInput
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, render_to_response
 
 from core.models import Customer, SMS, Tag, MessageTemplate
 
@@ -46,9 +51,37 @@ class CustomerSentSMSFilter(admin.SimpleListFilter):
             return queryset.filter(first_sms__isnull=True)
 
 
+class UpdateContactListForm(forms.Form):
+    contact_list = CharField(required=True)
+    _selected_action = CharField(widget=MultipleHiddenInput)
+
+
 class CustomerAdmin(admin.ModelAdmin):
     search_fields = ('name', )
+    actions = ('update_contact_list', )
     list_filter = ('contact_list', CustomerContactListFilter, CustomerSentSMSFilter, 'responded')
+
+    def update_contact_list(self, request, queryset):
+        form = None
+
+        if 'apply' in request.POST:
+            form = UpdateContactListForm(request.POST)
+            if form.is_valid():
+                queryset.update(contact_list=form.cleaned_data['contact_list'])
+                self.message_user(request,
+                                  "Changed contact list for {} customers".format(queryset.count()))
+                return HttpResponseRedirect(request.get_full_path())
+        if not form:
+            form = UpdateContactListForm(initial={'_selected_action': request.POST.getlist(ACTION_CHECKBOX_NAME)})
+
+        return render(
+            request,
+            template_name='admin/update_contact_list_intermediate.html',
+            context={'customers': queryset, 'form': form}
+        )
+
+
+    update_contact_list.short_description = "Change the Contact list"
 
     class Meta:
         model = Customer
