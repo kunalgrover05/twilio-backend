@@ -195,7 +195,7 @@ class CustomerSMSFullExportView(PandasView):
 
 class FileUploadForm(forms.Form):
     file = forms.FileField()
-    contact_list = fields.CharField(required=False)
+    contact_list = fields.CharField(required=True)
 
 
 @api_view(['GET'])
@@ -251,10 +251,9 @@ def upload_contacts_list(request):
                 'contact_list': contact_list,
                 'failed': failed
             })
-
     else:
         form = FileUploadForm()
-    return render(request, 'core/empty-form.html', {'form': form})
+    return render(request, 'core/file-upload-form.html', {'form': form})
 
 
 @api_view(['GET'])

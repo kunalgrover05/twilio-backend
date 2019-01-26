@@ -1,0 +1,51 @@
+{% load static %}
+
+<html>
+<head>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+        {{ form.non_field_errors }}
+        <div class="row" style="margin-top: 50px;">
+            <div class="col-12" style="text-align: center; font-weight: bold; font-size: 20px;">
+                Upload contacts
+            </div>
+            <div class="offset-1 col-10" style="color: grey">
+                <b>Help</b>: Upload an excel sheet containing the following columns in order
+                <ul>
+                    <li>Name</li>
+                    <li>Phone number(with international code)</li>
+                    <li>Street Address</li>
+                    <li>City</li>
+                    <li>State</li>
+                    <li>Zip Code</li>
+                </ul>
+                <a target="_blank" href={% static 'core/Upload.xls' %}>Download sample file here</a>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 30px">
+            <div class="col-10 offset-1">
+                {{ form.file.errors }}
+                <label>Choose file</label>
+                <div class="custom-file">
+                    <input type="file" name="file" class="custom-file-input" id="validatedCustomFile" required>
+                    <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+                </div>
+
+                <div class="form-group">
+                    {{ form.contact_list.errors }}
+                    <label>Contacts list</label>
+                    <input type="text" class="form-control" name="contact_list " required/>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+            </div>
+        </div>
+
+    </form>
+{% endblock %}
+</body>
+</html>
