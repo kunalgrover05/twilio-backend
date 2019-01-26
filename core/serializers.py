@@ -5,6 +5,7 @@ from django.conf import settings
 
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 from twilio.rest import Client
 
 from core import models
@@ -24,6 +25,13 @@ class SendSMSSerializer(serializers.Serializer):
             return models.SMSStatus.objects.get(sid=obj.sid).get_status_display()
         except ObjectDoesNotExist:
             return None
+
+    def validate(self, attrs):
+        # User should not get same message twice
+        if attrs['customer'].first_sms and attrs['customer'].first_sms.message == attrs['message']:
+            raise ValidationError(detail='Already sent this message to this user')
+
+        return super(SendSMSSerializer, self).validate(attrs)
 
     def create(self, validated_data):
         client = Client(
