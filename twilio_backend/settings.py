@@ -20,11 +20,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'qw#&!corz7-p#92yfi)rf-zcer5#xy96_bw)w^57q8g+ji(vov'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'qw#&!corz7-p#92yfi)rf-zcer5#xy96_bw)w^57q8g+ji(vov')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # if not os.environ.get('LAMBDA_TASK_ROOT'):
-DEBUG = False
+DEBUG = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -138,8 +138,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-TWILIO_ACCOUNT_SID = 'AC49ebc4806f5e4d507c76ec80a63524c9'
-TWILIO_AUTH_TOKEN = 'b7e52c08d0c85c044d010429bafe69be'
+TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')
 
 ALLOWED_HOSTS = ['*']
 
