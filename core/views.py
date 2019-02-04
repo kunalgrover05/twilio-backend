@@ -137,7 +137,7 @@ class CustomerFilter(FilterSet):
 
     class Meta:
         model = models.Customer
-        fields = ('no_message', 'tag', 'latest_sms__type')
+        fields = ('no_message', 'tag', 'latest_sms__type', 'responded')
 
 
 class CustomerSMSView(ListAPIView, RetrieveAPIView):
