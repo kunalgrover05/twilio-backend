@@ -212,7 +212,7 @@ def upload_contacts_list(request):
     Upload soil report using Excel using SampleCode = PlanId as Key
     """
 
-    FIELDS = ['Name', 'Phone No', 'Street Address', 'City', 'State', 'Zip Code']
+    FIELDS = ['First Name', 'Last Name', 'Phone No', 'Street Address', 'City', 'State', 'Zip Code']
 
     if request.method == 'POST':
         form = FileUploadForm(request.POST, request.FILES)
@@ -231,12 +231,13 @@ def upload_contacts_list(request):
                     return HttpResponse("Missing field in excel, expected fields: " + ', '.join(FIELDS) + "Failed at index: " + str(index))
 
             for rx in range(1, sh.nrows):
-                customer = models.Customer(name=sh.row(rx)[0].value,
-                                           phone_number='+1' + str(int(sh.row(rx)[1].value)),
-                                           street_address=sh.row(rx)[2].value,
-                                           city=sh.row(rx)[3].value,
-                                           state=sh.row(rx)[4].value,
-                                           zip_code=sh.row(rx)[5].value or None,
+                customer = models.Customer(first_name=sh.row(rx)[0].value,
+                                           last_name=sh.row(rx)[1].value,
+                                           phone_number='+1' + str(int(sh.row(rx)[2].value)),
+                                           street_address=sh.row(rx)[3].value,
+                                           city=sh.row(rx)[4].value,
+                                           state=sh.row(rx)[5].value,
+                                           zip_code=sh.row(rx)[6].value or None,
                                            contact_list=contact_list)
 
                 try:
