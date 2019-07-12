@@ -27,7 +27,7 @@ class Customer(models.Model):
 
     @property
     def name(self):
-        return self.first_name + (" " + self.last_name) if self.last_name else ""
+        return self.first_name + (" " + self.last_name if self.last_name else "")
     
     def __str__(self):
         return self.name

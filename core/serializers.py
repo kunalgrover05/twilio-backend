@@ -48,7 +48,7 @@ class SendSMSSerializer(serializers.Serializer):
             sender_number = random.choice(numbers).phone_number
 
         # Replace user attributes in message
-        message = validated_data['message'].replace('<Name>', validated_data['customer'].first_name)
+        message = validated_data['message'].replace("<Name>", validated_data['customer'].first_name)
         message = message.replace('<Address>', validated_data['customer'].street_address or "")
         message = message.replace('<City>', validated_data['customer'].city or "")
         message = message.replace('<State>', validated_data['customer'].state or "")
@@ -63,7 +63,7 @@ class SendSMSSerializer(serializers.Serializer):
                              sender_number=sender_number,
                              sent_by=validated_data['sent_by'],
                              customer=validated_data['customer'],
-                             message=validated_data['message'])
+                             message=message)
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
