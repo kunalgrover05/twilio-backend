@@ -48,7 +48,7 @@ class SendSMSSerializer(serializers.Serializer):
             sender_number = random.choice(numbers).phone_number
 
         # Replace user attributes in message
-        message = validated_data['message'].replace('<Name>', validated_data['customer'].name)
+        message = validated_data['message'].replace('<Name>', validated_data['customer'].first_name)
         message = message.replace('<Address>', validated_data['customer'].street_address)
         message = message.replace('<City>', validated_data['customer'].city)
         message = message.replace('<State>', validated_data['customer'].state)
@@ -72,7 +72,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
 
 class SMSSerializer(serializers.ModelSerializer):
-    customer = serializers.StringRelatedField(source='customer.name')
+    customer = serializers.StringRelatedField(source='customer.first_name')
     sent_by = serializers.StringRelatedField(source='sent_by.first_name')
     status = serializers.SerializerMethodField()
 

@@ -25,8 +25,12 @@ class Customer(models.Model):
     first_sms = models.ForeignKey('SMS', null=True, blank=True, on_delete=models.CASCADE, related_name='customer_first')
     responded = models.BooleanField(default=False)
 
+    @property
+    def name(self):
+        return self.first_name + (" " + self.last_name) if self.last_name else ""
+    
     def __str__(self):
-        return self.first_name
+        return self.name
 
 
 class SMS(models.Model):
