@@ -79,9 +79,9 @@ class CustomerView(CreateAPIView, UpdateAPIView,
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = CustomerSerializer
     filter_backends = (filters.SearchFilter, DjangoFilterBackend)
-    queryset = models.Customer.objects.all().order_by('name')
+    queryset = models.Customer.objects.all().order_by('first_name')
     pagination_class = CustomerPagination
-    search_fields = ('name', 'city', 'phone_number', 'street_address', 'state', 'zip_code')
+    search_fields = ('first_name', 'last_name', 'city', 'phone_number', 'street_address', 'state', 'zip_code')
     filter_fields = ('contact_list', )
 
     def get(self, request, *args, **kwargs):
@@ -144,7 +144,7 @@ class CustomerSMSView(ListAPIView, RetrieveAPIView):
     permission_classes = (permissions.IsAdminUser,)
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, OrderingFilter)
     filterset_class = CustomerFilter
-    search_fields = ('name', 'city', 'phone_number', 'street_address', 'state', 'zip_code')
+    search_fields = ('first_name', 'last_name', 'city', 'phone_number', 'street_address', 'state', 'zip_code')
     serializer_class = CustomerSMSSerializer
     queryset = models.Customer.objects.select_related('latest_sms').all()
     pagination_class = CustomerPagination
@@ -163,7 +163,7 @@ def export_report(request):
 
 class CustomerSMSFullExportView(PandasView):
     serializer_class = CustomerSMSExportSerializer
-    queryset = models.Customer.objects.prefetch_related('all_sms').all().order_by('name')
+    queryset = models.Customer.objects.prefetch_related('all_sms').all().order_by('first_name')
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, )
     filterset_class = CustomerFilter
     permission_classes = (permissions.IsAdminUser,)
