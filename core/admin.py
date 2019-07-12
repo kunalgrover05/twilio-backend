@@ -57,7 +57,7 @@ class UpdateContactListForm(forms.Form):
 
 
 class CustomerAdmin(admin.ModelAdmin):
-    search_fields = ('name', )
+    search_fields = ('first_name', )
     actions = ('update_contact_list', )
     list_filter = ('contact_list', CustomerContactListFilter, CustomerSentSMSFilter, 'responded')
 

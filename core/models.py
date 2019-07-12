@@ -10,7 +10,11 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 class Customer(models.Model):
     phone_number = PhoneNumberField(unique=True)
-    name = models.CharField(max_length=191)
+    phone_number2 = PhoneNumberField(unique=True, null=True, blank=True)
+    phone_number3 = PhoneNumberField(unique=True, null=True, blank=True)
+    phone_number4 = PhoneNumberField(unique=True, null=True, blank=True)
+    first_name = models.CharField(max_length=191)
+    last_name = models.CharField(max_length=191, null=True, blank=True)
     street_address = models.CharField(max_length=191, null=True, blank=True)
     city = models.CharField(max_length=191, null=True, blank=True)
     state = models.CharField(max_length=191, null=True, blank=True)
@@ -22,7 +26,7 @@ class Customer(models.Model):
     responded = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return self.first_name
 
 
 class SMS(models.Model):

@@ -47,8 +47,12 @@ class SendSMSSerializer(serializers.Serializer):
         if not sender_number:
             sender_number = random.choice(numbers).phone_number
 
+        # Replace user attributes in message
+        message = validated_data['message'].replace('<Name>', validated_data['customer'].name)
+        message = message.replace('<Address>', validated_data['customer'].street_address)
+
         response = client.messages.create(
-            body=validated_data['message'],
+            body=message,
             to=str(validated_data['customer'].phone_number), from_=sender_number,
             status_callback='https://dxrgulff1k.execute-api.us-east-1.amazonaws.com/dev/callback/')
 
