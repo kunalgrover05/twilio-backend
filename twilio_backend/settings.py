@@ -85,22 +85,22 @@ WSGI_APPLICATION = 'twilio_backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 # if os.environ.get('LAMBDA_TASK_ROOT'):
-# DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.mysql',
-#             'HOST': 'twilio-backend.cg0a62vmn9fd.us-east-1.rds.amazonaws.com',
-#             'USER': 'master',
-#             'PASSWORD': 'GCSgNUV6',
-#             'NAME': 'twilio'
-#         }
-# }
-# else:
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'twilio.db'
-    }
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'HOST': 'twilio-backend.cg0a62vmn9fd.us-east-1.rds.amazonaws.com',
+            'USER': 'master',
+            'PASSWORD': 'GCSgNUV6',
+            'NAME': 'twilio'
+        }
 }
+# else:
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': 'twilio.db'
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

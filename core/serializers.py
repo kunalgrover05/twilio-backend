@@ -50,6 +50,8 @@ class SendSMSSerializer(serializers.Serializer):
         # Replace user attributes in message
         message = validated_data['message'].replace('<Name>', validated_data['customer'].name)
         message = message.replace('<Address>', validated_data['customer'].street_address)
+        message = message.replace('<City>', validated_data['customer'].city)
+        message = message.replace('<State>', validated_data['customer'].state)
 
         response = client.messages.create(
             body=message,
